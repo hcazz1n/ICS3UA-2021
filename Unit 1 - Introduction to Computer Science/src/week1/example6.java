@@ -25,5 +25,18 @@ public class example6 {
         //modulous operator %, used for ints
 
         System.out.println(13%3); //13/3, what is the remainder? 1.
+
+        int a = 5;
+        a++;
+        ++a;
+        a--;
+        --a;
+
+        int b = 3;
+        int e = 3;
+
+        int c = 2*b++; //c=6, b=4
+
+        int d = 2*++e; //d=8, e=4
     }
 }
