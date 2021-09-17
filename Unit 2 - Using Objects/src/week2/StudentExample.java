@@ -22,5 +22,20 @@ public class StudentExample {
         //Student tristan; tristan is currently the null reference
 
         //richie.increaseGrade(); //throws java.lang.NullPointerException because richie is null
+
+        yola.addTest(87);
+        yola.displayAverage();
+        yola.addTest(91);
+        yola.displayAverage();
+        yola.addTest(97);
+        yola.displayAverage();
+        yola.addTest(67);
+        yola.displayAverage();
+
+        Student harrison = new Student("Harrison", "547235"); 
+        double yolaAverage = yola.getAverage();
+        System.out.println(yola.getName() + " has an average of " + yolaAverage);
+
+        
     } 
 }
