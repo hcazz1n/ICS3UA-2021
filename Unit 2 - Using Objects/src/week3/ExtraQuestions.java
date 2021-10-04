@@ -2,7 +2,7 @@ package week3;
 
 public class ExtraQuestions {
     public static void main(String[] args) {
-        System.out.println(questionSeven("APPLE", "ORANGE"));
+        System.out.println(questionSix("Happy", "app"));
     }
 
     /**
@@ -52,9 +52,10 @@ public class ExtraQuestions {
      * Create a function that accepts a String and a substring and then returns a 
      * String with the second string removed from the first String.
      */
-    public static String questionSix(String str, int subStart, int subEnd) {
-        String front = str.substring(0, subStart);
-        String back = str.substring(subEnd + 1);
+    public static String questionSix(String str, String subStr) {
+        int index = str.indexOf(subStr);
+        String front = str.substring(0, index);
+        String back = str.substring(index + subStr.length());
         return front + back;
     }
 
