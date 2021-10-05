@@ -12,30 +12,36 @@ public class CrossCountry {
     }
 
     private static void processRunner(Scanner input) {
-        //String firstName, lastName;
-        String name;
+        String firstName, lastName;
         String mileOne, mileTwo, finishTime;
         String splitTwo, splitThree;
 
-        System.out.print("Please enter your first and last name: ");
-        name = input.nextLine();
+        System.out.print("Please enter your first name: ");
+        firstName = input.nextLine();
+
+        System.out.print("Please enter your last name: ");
+        lastName = input.nextLine();
+
         System.out.print("Please enter the time of the first mile (Minutes:Seconds.Milliseconds): ");
         mileOne = input.nextLine();
+
         System.out.print("Please enter the time at the end of the second mile (Minutes:Seconds.Milliseconds): ");
         mileTwo = input.nextLine();
+
         System.out.print("Please enter your total time (Minutes:Seconds.Milliseconds): ");
         finishTime = input.nextLine();
-        System.out.println("Name: " + name);
-        System.out.println("Mile 1 Time: " + mileOne);
-        System.out.println("Mile 2 Time: " + mileTwo);
-        System.out.println("Total Time: " + finishTime);
 
         splitTwo = subtractTimes(mileTwo, mileOne);
         splitThree = subtractTimes(finishTime, mileTwo);
+
+        System.out.println("Name: " + firstName + " " + lastName);
+        System.out.println("Mile 1/Split 1 Time: " + mileOne);
+        System.out.println("Split 2 Time: " + splitTwo);
+        System.out.println("Split 3 Time: " + splitThree);
+        System.out.println("Total Time: " + finishTime);
     }
 
     /**
-     * 
      * @param endTime
      * @param startTime
      * @return
@@ -66,7 +72,7 @@ public class CrossCountry {
         int minutes = (int)totalSeconds / 60;
         double seconds = totalSeconds % 60;
 
-        return minutes + ":" + seconds;
+        return String.format("%d:%06.3f", minutes, seconds);
     }
 
 }
