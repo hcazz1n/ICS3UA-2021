@@ -12,22 +12,23 @@ public class CrossCountry {
     }
 
     private static void processRunner(Scanner input) {
-        String firstName, lastName;
+        //String firstName, lastName;
+        String name;
         String mileOne, mileTwo, finishTime;
         String splitTwo, splitThree;
 
         System.out.print("Please enter your first and last name: ");
-        String name = input.nextLine();
+        name = input.nextLine();
         System.out.print("Please enter the time of the first mile (Minutes:Seconds.Milliseconds): ");
-        String m1 = input.nextLine();
+        mileOne = input.nextLine();
         System.out.print("Please enter the time at the end of the second mile (Minutes:Seconds.Milliseconds): ");
-        String m2 = input.nextLine();
+        mileTwo = input.nextLine();
         System.out.print("Please enter your total time (Minutes:Seconds.Milliseconds): ");
-        String fT = input.nextLine();
+        finishTime = input.nextLine();
         System.out.println("Name: " + name);
-        System.out.println("Mile 1 Time: " + m1);
-        System.out.println("Mile 2 Time: " + m2);
-        System.out.println("Total Time: " + fT);
+        System.out.println("Mile 1 Time: " + mileOne);
+        System.out.println("Mile 2 Time: " + mileTwo);
+        System.out.println("Total Time: " + finishTime);
 
         splitTwo = subtractTimes(mileTwo, mileOne);
         splitThree = subtractTimes(finishTime, mileTwo);
