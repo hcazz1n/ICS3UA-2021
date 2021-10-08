@@ -12,10 +12,10 @@ public class CrossCountry {
     }
 
     /**
-     * processRunner prompts the user to input their first and last name, as well as the times of the
-     * first mile, second mile, and the final time. It then calculates the time of each split and displays
-     * the runner's full name, the time of each split, and the finishing time.
-     * @param input is a scanner which will check to see what is typed into the console and save it to
+     * processRunner prompts user to input their first and last name, and the times of the
+     * first mile, second mile, and the final time. Then calculates the time of each split and displays
+     * runner's full name, time of each split, and finishing time.
+     * @param input a scanner which will check to see what is typed into the console and save it to
      * the variables it is used in
      */
     private static void processRunner(Scanner input) {
