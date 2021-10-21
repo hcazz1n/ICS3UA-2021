@@ -31,7 +31,7 @@ public class ThreeCardPoker {
 
       boolean playAgain = true;
       while (playAgain) {
-         wallet = playPokerHand(in, wallet, 50, 100);
+         wallet = playPokerHand(in, wallet, minBet, maxBet);
          if (wallet >= 100)
             playAgain = playAgain(in);
          else {
@@ -146,19 +146,135 @@ private static int getHandValue(String cards) {
 }
 
 private static boolean isFlush(String cards) {
+    String card1 = cards.substring(1, 2);
+    String card2 = cards.substring(4, 5);
+    String card3 = cards.substring(7, 8);
+    if(card1.equals(card2) && card1.equals(card3)){
+        return true;
+    }
     return false;
 }
 
 private static boolean isStraight(String cards) {
+    int ace = 0;
+    int jack = 11;
+    int queen = 12;
+    int king = 13;
+    String card1 = cards.substring(0, 2);
+    String card2 = cards.substring(4, 6);
+    String card3 = cards.substring(8, cards.length() - 1);
+    int numCard1 = 0, numCard2 = 0, numCard3 = 0;
+    if(card1.indexOf("10") < 0){
+        card1 = cards.substring(0, 1);
+        if(card1.indexOf("J") < 0){
+            numCard1 = jack;
+        }
+        else if(card1.indexOf("Q") < 0){
+            numCard1 = queen;
+        }
+        else if(card1.indexOf("K") < 0){
+            numCard1 = king;
+        }
+        else if(card1.indexOf("A") < 0){
+            numCard1 = ace;
+        }
+        else{
+            numCard1 = Integer.parseInt(card1);
+        }
+    }
+    if(card2.indexOf("10") < 0){
+        card2 = cards.substring(3, 4);
+        if(card2.indexOf("J") < 0){
+            numCard2 = jack;
+        }
+        else if(card2.indexOf("Q") < 0){
+            numCard2 = queen;
+        }
+        else if(card2.indexOf("K") < 0){
+            numCard2 = king;
+        }
+        else if(card2.indexOf("A") < 0){
+            numCard2 = ace;
+        }
+        else{
+            numCard2 = Integer.parseInt(card2);
+        }
+    }
+    if(card3.indexOf("10") < 0){
+        card3 = cards.substring(6, 7);
+        if(card3.indexOf("J") < 0){
+            numCard3 = jack;
+        }
+        else if(card3.indexOf("Q") < 0){
+            numCard3 = queen;
+        }
+        else if(card2.indexOf("K") < 0){
+            numCard3 = king;
+        }
+        else if(card2.indexOf("A") < 0){
+            numCard3 = ace;
+        }
+        else{
+            numCard3 = Integer.parseInt(card3);
+        }
+    }
+
+    if(numCard1 - 1 == numCard2){
+        if(numCard1 + 1 == numCard3){
+            return true;
+        }
+        else if(numCard2 - 1 == numCard3){
+            return true;
+        }   
+    }
+    else if(numCard1 - 1 == numCard3){
+        if(numCard1 + 1 == numCard2){
+            return true;
+        }
+        else if(numCard3 - 1 == numCard2){
+            return true;
+        }
+    }
     return false;
 }
 
 private static boolean isThreeOfAKind(String cards) {
+    String card1 = cards.substring(0, 2);
+    String card2 = cards.substring(4, 6);
+    String card3 = cards.substring(8, cards.length() - 1);
+    if(card1.indexOf("10") < 0){
+        card1 = cards.substring(0, 1);
+    }
+    if(card2.indexOf("10") < 0){
+        card2 = cards.substring(3, 4);
+    }
+    if(card3.indexOf("10") < 0){
+        card3 = cards.substring(6, 7);
+    }
+
+    if(card1.equals(card2) && card1.equals(card3)){
+        return true;
+    }
     return false;
 }
 
 private static boolean isPair(String cards) {
-    
+    String card1 = cards.substring(0, 2);
+    String card2 = cards.substring(4, 6);
+    String card3 = cards.substring(8, cards.length() - 1);
+    if(card1.indexOf("10") < 0){
+        card1 = cards.substring(0, 1);
+    }
+    if(card2.indexOf("10") < 0){
+        card2 = cards.substring(3, 4);
+    }
+    if(card3.indexOf("10") < 0){
+        card3 = cards.substring(6, 7);
+    }
+
+    if(card1.equals(card2) || card1.equals(card3) || card2.equals(card3)){
+        return true;
+    }
     return false;
 }
 
@@ -274,7 +390,7 @@ private static String getCard(String usedCards) {
       boolean validInput = false;
       int val = 0;
       while (!validInput) {
-         System.out.print("Hoe many cards to discard [0,3]: ");
+         System.out.print("How many cards to discard [0,3]: ");
          try {
             val = Integer.parseInt(in.nextLine());
 
