@@ -13,6 +13,7 @@ public class CrazyEights {
     private static final String JACK = "J";
     private static final String QUEEN = "Q";
     private static final String KING = "K";
+    private static final String VALID_CARDS = "AH2H3H4H5H6H7H8H9H10HJHQHKHAS2S3S4S5S6S7S8S9S10SJSQSKSAC2C3C4C5C6C7C8C9C10CJCQCKCAD2D3D4D5D6D7D8D9D10DJDQDKD";
 
     public static void main(String[] args) {
         int playerPoints = 0, c1Points = 0, c2Points = 0;
@@ -79,6 +80,9 @@ public class CrazyEights {
         String c1Hand = "";
         String c2Hand = "";
         String topCard = "";
+        
+        boolean playerLastCard = false, c1LastCard = false, c2LastCard = false;
+        boolean changeMove = false;
 
         for(int i=0; i < 4; i++){
             playerHand += getCard() + " ";
@@ -91,6 +95,9 @@ public class CrazyEights {
         c2Hand += getCard();
 
         topCard = getCard();
+        while(topCard.indexOf("8") > 0){
+            topCard = getCard();
+        }
 
         System.out.println("Your Hand: [" + playerHand + "]");
         System.out.println("Computer 1 Hand: [XX XX XX XX XX]");
@@ -100,27 +107,120 @@ public class CrazyEights {
         //"7H 5D AC JS-9D"
         String temp = playerMove(in, playerHand, topCard);
         playerHand = temp.substring(0, temp.indexOf("-"));
+        playerLastCard = isLastCard(playerHand);
         topCard = temp.substring(temp.indexOf("-") + 1);
 
-        computerMove(c1Hand, topCard);
+        if(playerLastCard){
+            changeMove = true;
+        }
+
+        temp = computerMove(c1Hand, topCard, changeMove);
         c1Hand = temp.substring(0, temp.indexOf("-"));
+        c1LastCard = isLastCard(c1Hand);
         topCard = temp.substring(temp.indexOf("-") + 1);
 
-        computerMove(c2Hand, topCard);
+        if(c1LastCard){
+            changeMove = true;
+        }
+
+        temp = computerMove(c2Hand, topCard, changeMove);
         c2Hand = temp.substring(0, temp.indexOf("-"));
+        c2LastCard = isLastCard(c2Hand);
         topCard = temp.substring(temp.indexOf("-") + 1);
+
+        if(c2LastCard){
+            changeMove = true;
+        }
 
         return null;
     }
 
-    private static String computerMove(String hand, String topCard) {
+    private static boolean isLastCard(String hand) {
+        if(hand.length() < 3){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
-        return null;
+    private static String computerMove(String hand, String topCard, boolean changeMove) {
+        String newHand = "";
+        String front = "";
+        String back = "";
+        String card = "";
+        int indexCardPlayed = 0;
+        int draws = 0;
+        while(!canPlay(hand, topCard)){
+            hand += " " + getCard();
+            draws++;
+            if(draws == 5){
+                break;
+            }
+        }
+        if(changeMove){
+            if(hand.indexOf(topCard.substring(0, 1)) > 0){
+                String currentSuit = hand.substring(hand.indexOf(topCard.substring(0, 1)) + 1, hand.indexOf(topCard.substring(0, 1)) + 2);
+                if((currentSuit + 1).equals(topCard.substring(1, 2))){
+                    indexCardPlayed = hand.indexOf(topCard.substring(0, 1));
+                    front = hand.substring(0, indexCardPlayed);
+                    back = hand.substring((indexCardPlayed + 3));
+                    card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
+                    newHand = front + back + "-" + card;
+                }
+                else if(hand.indexOf("8") > 0){
+                    is8(hand, card);
+                }
+                else if(hand.indexOf(topCard.substring(1, 2)) > 0){
+                    indexCardPlayed = hand.indexOf(topCard.substring(1, 2)) - 1;
+                    front = hand.substring(0, indexCardPlayed);
+                    back = hand.substring((indexCardPlayed + 3));
+                    card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
+                    newHand = front + back + "-" + card;
+                }
+            }
+        }
+        else if(hand.indexOf(topCard.substring(1, 2)) > 0){
+            indexCardPlayed = hand.indexOf(topCard.substring(1, 2)) - 1;
+            front = hand.substring(0, indexCardPlayed);
+            back = hand.substring((indexCardPlayed + 3));
+            card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
+            newHand = front + back + "-" + card;
+        }
+        else if(hand.indexOf(topCard.substring(0, 1)) > 0){
+            indexCardPlayed = hand.indexOf(topCard.substring(0, 1));
+            front = hand.substring(0, indexCardPlayed);
+            back = hand.substring((indexCardPlayed + 3));
+            card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
+            newHand = front + back + "-" + card;
+        }
+        else if(hand.indexOf("8") > 0){
+            is8(hand, card);
+        }
+        return newHand;
+    }
+
+    private static void is8(String hand, String card) {
+        int roll = (int)(Math.random() * 4);
+            if(roll == 0 && hand.indexOf("D") > 0){
+                card = "8D";
+            }
+            else if(roll == 1 && hand.indexOf("S") > 0){
+                card = "8S";
+            }
+            else if(roll == 2 && hand.indexOf("H") > 0){
+                card = "8H";
+            }
+            else if(roll == 3 && hand.indexOf("C") > 0){
+                card = "8C";
+            }
     }
 
     private static String playerMove(Scanner in, String hand, String topCard) {
         boolean validInput = false;
         String newHand = "";
+        String front = "";
+        String back = "";
         int draws = 0;
         while(!canPlay(hand, topCard)){
             hand += " " + getCard();
@@ -133,22 +233,47 @@ public class CrazyEights {
         while(!validInput){
             System.out.print("Select a card to play: ");
             String card = in.nextLine();
-            if(hand.indexOf(card) < 0){
-                System.out.println("Invalid Card!");
+            if(hand.indexOf(VALID_CARDS) < 0){
+                System.out.println("Invalid card!");
+            }
+            else if(hand.indexOf(card) < 0){
+                System.out.println("You don't have that card!");
             }
             else{
                 if(card.substring(0, 1).equals("8")){
-                    newHand = discard(in, hand, card, true);
+                    if(hand.indexOf(card) < hand.length() - 2){
+                        front = hand.substring(0, hand.indexOf(card));
+                        back = hand.substring(hand.indexOf(card) + 3);
+                    }
+                    else{
+                        front = hand.substring(0, hand.indexOf(card) - 1);
+                    }
+                    card = card.replace(card, changeSuit(in, card));
+                    newHand = front + back + "-" + card;
                     validInput = true;
                 }
                 else if(card.indexOf("10") >= 0 || topCard.indexOf("10") >= 0){
                     if(card.indexOf(topCard.substring(0, 2)) >= 0 || card.indexOf(topCard.substring(0, 1)) >= 0 || card.indexOf(topCard.substring(2)) >= 0 || card.indexOf(topCard.substring(1, 2)) >= 0){
-                        newHand = discard(in, hand, card, false);
+                        if(hand.indexOf(card) < hand.length() - 3){
+                            front = hand.substring(0, hand.indexOf(card));
+                            back = hand.substring(hand.indexOf(card) + 4);
+                        }
+                        else{
+                            front = hand.substring(0, hand.indexOf(card) - 1);
+                        }
+                        newHand = front + back + "-" + card;
                         validInput = true;
                     }
                 }
                 else if(card.indexOf(topCard.substring(0, 1)) >= 0 || card.indexOf(topCard.substring(1, 2)) >= 0){
-                    newHand = discard(in, hand, card, false);
+                    if(hand.indexOf(card) < hand.length() - 2){
+                        front = hand.substring(0, hand.indexOf(card));
+                        back = hand.substring(hand.indexOf(card) + 3);
+                    }
+                    else{
+                        front = hand.substring(0, hand.indexOf(card) - 1);
+                    }
+                    newHand = front + back + "-" + card;
                     validInput = true;
                 }
                 else{
@@ -156,28 +281,6 @@ public class CrazyEights {
                 }
             }
         }
-        return newHand;
-    }
-
-    private static String discard(Scanner in, String hand, String card, boolean isEight) {
-        String beforeDash = "";
-        String afterDash = "";
-        if(hand.indexOf(card) < hand.length() - 2){
-            if(hand.indexOf("10") >= hand.length() - 3 && hand.indexOf(card.substring(0, 2)) > 0){
-                beforeDash = hand.substring(0, hand.indexOf(card) - 1);
-            }
-            else{
-                beforeDash = hand.substring(0, hand.indexOf(card));
-                afterDash = hand.substring(hand.indexOf(card) + 3);
-            }
-        }
-        else{
-            beforeDash = hand.substring(0, hand.indexOf(card) - 1);
-        }
-        if(isEight){
-            card = card.replace(card, changeSuit(in, card));
-        }
-        String newHand = beforeDash + afterDash + "-" + card;
         return newHand;
     }
 

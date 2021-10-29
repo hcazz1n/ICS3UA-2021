@@ -13,6 +13,7 @@ public class CrazyEights {
     private static final String JACK = "J";
     private static final String QUEEN = "Q";
     private static final String KING = "K";
+    private static final String VALID_CARDS = "AH2H3H4H5H6H7H8H9H10HJHQHKHAS2S3S4S5S6S7S8S9S10SJSQSKSAC2C3C4C5C6C7C8C9C10CJCQCKCAD2D3D4D5D6D7D8D9D10DJDQDKD";
 
     public static void main(String[] args) {
         int playerPoints = 0, c1Points = 0, c2Points = 0;
@@ -80,9 +81,8 @@ public class CrazyEights {
         String c2Hand = "";
         String topCard = "";
         
-        boolean playerLastCard = false;
-        boolean c1LastCard = false;
-        boolean c2LastCard = false;
+        boolean playerLastCard = false, c1LastCard = false, c2LastCard = false;
+        boolean changeMove = false;
 
         for(int i=0; i < 4; i++){
             playerHand += getCard() + " ";
@@ -95,6 +95,9 @@ public class CrazyEights {
         c2Hand += getCard();
 
         topCard = getCard();
+        while(topCard.indexOf("8") > 0){
+            topCard = getCard();
+        }
 
         System.out.println("Your Hand: [" + playerHand + "]");
         System.out.println("Computer 1 Hand: [XX XX XX XX XX]");
@@ -106,22 +109,60 @@ public class CrazyEights {
         playerHand = temp.substring(0, temp.indexOf("-"));
         topCard = temp.substring(temp.indexOf("-") + 1);
 
-        computerMove(c1Hand, topCard);
+        if(emptyHand(playerHand)){
+            return null;
+        }
+        else if(isLastCard(playerHand)){
+            changeMove = true;
+        }
+        
+
+        temp = computerMove(c1Hand, topCard, changeMove);
         c1Hand = temp.substring(0, temp.indexOf("-"));
         topCard = temp.substring(temp.indexOf("-") + 1);
 
-        computerMove(c2Hand, topCard);
+        if(emptyHand(c1Hand)){
+            return null;
+        }
+        else if(isLastCard(c1Hand)){
+            changeMove = true;
+        }
+
+        temp = computerMove(c2Hand, topCard, changeMove);
         c2Hand = temp.substring(0, temp.indexOf("-"));
+        c2LastCard = isLastCard(c2Hand);
         topCard = temp.substring(temp.indexOf("-") + 1);
+
+        if(emptyHand(c2Hand)){
+            return null;
+        }
+        else if(isLastCard(c2Hand)){
+            changeMove = true;
+        }
 
         return null;
     }
 
-    private static String computerMove(String hand, String topCard) {
+    private static boolean emptyHand(String hand) {
+        if(hand.length() == 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private static boolean isLastCard(String hand) {
+        if(hand.length() < 3){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    private static String computerMove(String hand, String topCard, boolean changeMove) {
         String newHand = "";
-        String front = "";
-        String back = "";
-        String card = "";
         int indexCardPlayed = 0;
         int draws = 0;
         while(!canPlay(hand, topCard)){
@@ -131,38 +172,83 @@ public class CrazyEights {
                 break;
             }
         }
-        if()
-        if(hand.indexOf(topCard.substring(1, 2)) > 0){
+        if(changeMove){
+            String currentSuit = "";
+            if(hand.indexOf(topCard.substring(0, 1)) >= 0 && topCard.indexOf("10") < 0){
+                currentSuit = hand.substring(hand.indexOf(topCard.substring(0, 1)) + 1, hand.indexOf(topCard.substring(0, 1)) + 2);
+                if((currentSuit + 1).equals(topCard.substring(1, 2))){
+                    indexCardPlayed = hand.indexOf(topCard.substring(0, 1));
+                    newHand = getHand(indexCardPlayed, hand, false);
+                }
+            }
+            else if(hand.indexOf("10") >= 0 && topCard.indexOf("10") >= 0){
+                currentSuit = hand.substring(hand.indexOf(topCard.substring(0, 2)) + 2, hand.indexOf(topCard.substring(0, 2)) + 3);
+                if((currentSuit + 1).equals(topCard.substring(2, 3))){
+                    indexCardPlayed = hand.indexOf(topCard.substring(0, 1));
+                    newHand = getHand(indexCardPlayed, hand, true);
+                }
+            }
+            else if(hand.indexOf("8") >= 0){
+                newHand = is8(hand);
+            }
+            else if(hand.indexOf(topCard.substring(1, 2)) >= 0 && topCard.indexOf("10") < 0){
+                indexCardPlayed = hand.indexOf(topCard.substring(1, 2)) - 1;
+                newHand = getHand(indexCardPlayed, hand, false);
+            }
+            else if(hand.indexOf(topCard.substring(2, 3)) >= 0 && topCard.indexOf("10") >= 0){
+                indexCardPlayed = hand.indexOf(topCard.substring(2, 3)) - 2;
+                newHand = getHand(indexCardPlayed, hand, true);
+            }
+        }
+        else if(hand.indexOf(topCard.substring(1, 2)) >= 0 && topCard.indexOf("10") < 0){
             indexCardPlayed = hand.indexOf(topCard.substring(1, 2)) - 1;
-            front = hand.substring(0, indexCardPlayed);
-            back = hand.substring((indexCardPlayed + 3));
-            card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
-            newHand = front + back + "-" + card;
+            newHand = getHand(indexCardPlayed, hand, false);
         }
-        else if(hand.indexOf(topCard.substring(0, 1)) > 0){
+        else if(hand.indexOf(topCard.substring(2, 3)) >= 0 && topCard.indexOf("10") >= 0){
+            indexCardPlayed = hand.indexOf(topCard.substring(2, 3)) - 2;
+            newHand = getHand(indexCardPlayed, hand, true);
+        }
+        else if(hand.indexOf(topCard.substring(0, 1)) >= 0){
             indexCardPlayed = hand.indexOf(topCard.substring(0, 1));
-            front = hand.substring(0, indexCardPlayed);
-            back = hand.substring((indexCardPlayed + 3));
-            card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
-            newHand = front + back + "-" + card;
+            newHand = getHand(indexCardPlayed, hand, false);
         }
-        else if(hand.indexOf("8") > 0){
-            if(hand.indexOf("D") > 0){
+        else if(hand.indexOf("8") >= 0){
+            newHand = is8(hand);
+        }
+        return newHand;
+    }
+
+    private static String getHand(int indexCardPlayed, String hand, boolean is10) {
+        String front = hand.substring(0, indexCardPlayed);
+        String back = "";
+        String card = "";
+        if(!is10){
+            back = hand.substring(indexCardPlayed + 3);
+            card = hand.substring(indexCardPlayed, indexCardPlayed + 2);
+        }
+        else{
+            back = hand.substring(indexCardPlayed + 4);
+            card = hand.substring(indexCardPlayed, indexCardPlayed + 3);
+        }
+        return front + back + "-" + card;
+    }
+
+    private static String is8(String hand) {
+        String card = "";
+        int roll = (int)(Math.random() * 4);
+            if(roll == 0 && hand.indexOf("D") > 0){
                 card = "8D";
             }
-            else if(hand.indexOf("S") > 0){
+            else if(roll == 1 && hand.indexOf("S") > 0){
                 card = "8S";
             }
-            else if(hand.indexOf("H") > 0){
+            else if(roll == 2 && hand.indexOf("H") > 0){
                 card = "8H";
             }
-            else if(hand.indexOf("C") > 0){
+            else if(roll == 3 && hand.indexOf("C") > 0){
                 card = "8C";
             }
-        }
-
-
-        return newHand;
+        return card;
     }
 
     private static String playerMove(Scanner in, String hand, String topCard) {
@@ -182,8 +268,11 @@ public class CrazyEights {
         while(!validInput){
             System.out.print("Select a card to play: ");
             String card = in.nextLine();
-            if(hand.indexOf(card) < 0){
-                System.out.println("Invalid Card!");
+            if(hand.indexOf(VALID_CARDS) < 0){
+                System.out.println("Invalid card!");
+            }
+            else if(hand.indexOf(card) < 0){
+                System.out.println("You don't have that card!");
             }
             else{
                 if(card.substring(0, 1).equals("8")){
