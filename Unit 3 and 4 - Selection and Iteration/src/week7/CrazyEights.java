@@ -21,12 +21,6 @@ public class CrazyEights {
 
         while(!gameOver(playerPoints, c1Points, c2Points)){
             String result = playRound(in);
-            int firstDash = result.indexOf("-");
-            int secondDash = result.indexOf("-", firstDash + 1);
-            playerPoints += Integer.parseInt(result.substring(0, firstDash));
-            c1Points += Integer.parseInt(result.substring(firstDash + 1, secondDash));
-            c2Points += Integer.parseInt(result.substring(secondDash + 1));
-
             System.out.println("Current Score: " + playerPoints + "-" + c1Points + "-" + c2Points);
         }
     }
@@ -81,7 +75,6 @@ public class CrazyEights {
         String c2Hand = "";
         String topCard = "";
         
-        boolean playerLastCard = false, c1LastCard = false, c2LastCard = false;
         boolean changeMove = false;
 
         for(int i=0; i < 4; i++){
@@ -99,48 +92,119 @@ public class CrazyEights {
             topCard = getCard();
         }
 
-        System.out.println("Your Hand: [" + playerHand + "]");
-        System.out.println("Computer 1 Hand: [XX XX XX XX XX]");
-        System.out.println("Computer 2 Hand: [XX XX XX XX XX]");
-        System.out.println("Top Card: [" + topCard + "]");
+        while(!emptyHand(playerHand) || !emptyHand(c1Hand) || !emptyHand(c2Hand)){
+            System.out.println("Your Hand: [" + playerHand + "]");
+            System.out.println("Computer 1 Hand: [XX XX XX XX XX]");
+            System.out.println("Computer 2 Hand: [XX XX XX XX XX]");
+            System.out.println("Top Card: [" + topCard + "]");
 
-        //"7H 5D AC JS-9D"
-        String temp = playerMove(in, playerHand, topCard);
-        playerHand = temp.substring(0, temp.indexOf("-"));
-        topCard = temp.substring(temp.indexOf("-") + 1);
+            //"7H 5D AC JS-9D"
+            String temp = playerMove(in, playerHand, topCard);
+            playerHand = temp.substring(0, temp.indexOf("-"));
+            topCard = temp.substring(temp.indexOf("-") + 1);
 
-        if(emptyHand(playerHand)){
-            return null;
-        }
-        else if(isLastCard(playerHand)){
-            changeMove = true;
-        }
-        
+            if(isLastCard(playerHand)){
+                changeMove = true;
+            }
 
-        temp = computerMove(c1Hand, topCard, changeMove);
-        c1Hand = temp.substring(0, temp.indexOf("-"));
-        topCard = temp.substring(temp.indexOf("-") + 1);
+            temp = computerMove(c1Hand, topCard, changeMove);
+            c1Hand = temp.substring(0, temp.indexOf("-"));
+            topCard = temp.substring(temp.indexOf("-") + 1);
 
-        if(emptyHand(c1Hand)){
-            return null;
-        }
-        else if(isLastCard(c1Hand)){
-            changeMove = true;
-        }
+            if(isLastCard(c1Hand)){
+                changeMove = true;
+            }
 
-        temp = computerMove(c2Hand, topCard, changeMove);
-        c2Hand = temp.substring(0, temp.indexOf("-"));
-        c2LastCard = isLastCard(c2Hand);
-        topCard = temp.substring(temp.indexOf("-") + 1);
+            temp = computerMove(c2Hand, topCard, changeMove);
+            c2Hand = temp.substring(0, temp.indexOf("-"));
+            topCard = temp.substring(temp.indexOf("-") + 1);
 
-        if(emptyHand(c2Hand)){
-            return null;
-        }
-        else if(isLastCard(c2Hand)){
-            changeMove = true;
+            if(isLastCard(c2Hand)){
+                changeMove = true;
+            }
         }
 
-        return null;
+        String currPoints = calculatePoints(playerHand, c1Hand, c2Hand);
+        return currPoints;
+    }
+    
+
+    private static String calculatePoints(String playerHand, String c1Hand, String c2Hand) {
+        String playerPointsStr = "";
+        String c1PointsStr = "";
+        String c2PointsStr = "";
+        int playerPoints = 0;
+        int c1Points = 0;
+        int c2Points = 0;
+        pointString(playerHand);
+        if(playerHand.length() > 0){
+            playerPointsStr = pointString(playerHand);
+            playerPoints = pointInt(playerPointsStr);
+        }
+        if(c1Hand.length() > 0){
+            c1PointsStr = pointString(c1Hand);
+            c1Points = pointInt(c1PointsStr);
+        }
+        if(c2Hand.length() > 0){
+            c2PointsStr = pointString(c2Hand);
+            c2Points = pointInt(c2PointsStr);
+        }
+        return Integer.toString(playerPoints) + "-" + Integer.toString(c1Points) + "-" + Integer.toString(c2Points);
+    }
+
+    private static int pointInt(String pointStr) {
+        int points = 0;
+        for(int i = 0; i < pointStr.length(); i++){
+            if(pointStr.substring(i, i + 1).equals("A")){
+                points += 1;
+            }
+            else if(pointStr.substring(i, i + 1).equals("J")){
+                points += 11;
+            }
+            else if(pointStr.substring(i, i + 1).equals("Q")){
+                points += 12;
+            }
+            else if(pointStr.substring(i, i + 1).equals("K")){
+                points += 13;
+            }
+            else if(pointStr.substring(i, i + 1).equals("8")){
+                points += 50;
+            }
+            else{
+                points += Integer.parseInt(pointStr.substring(i, i + 1));
+            }
+        }
+        return points;
+    }
+
+    private static String pointString(String hand) {
+        int numCards = countOccurrences(hand, " ") + 1;
+        int space = hand.indexOf(" ");
+        String points = "";
+        for(int i = 1; i <= numCards; i++){
+            if(i == 0){
+                points += hand.substring(0, space - 1);
+            }
+            else if(i == numCards){
+                points += hand.substring(space + 1, hand.length() - 1);
+            }
+            else{
+                int nextSpace = hand.indexOf(" ", space + 1);
+                points += hand.substring(space + 1, hand.indexOf(" ", nextSpace) - 1);
+                space = nextSpace;
+            }
+        }
+        return points;
+    }
+
+    private static int countOccurrences(String str1, String str2) {
+        int count = 0;
+        for (int i = 0; i < str1.length(); i++) {
+            String substr = str1.substring(i, i + str2.length());
+            if (str2.equals(substr))
+               count++;
+         }
+         return count;
     }
 
     private static boolean emptyHand(String hand) {
@@ -153,7 +217,7 @@ public class CrazyEights {
     }
 
     private static boolean isLastCard(String hand) {
-        if(hand.length() < 3){
+        if(hand.length() <= 3){
             return true;
         }
         else{
