@@ -147,13 +147,13 @@ public static void main(String[] args) {
 private static int test(DoubleArraySequence src, double[] data, int currentIndex, int manyItems, int capacity,
         int points) {
 
-    if (capacity != src.getCapacity())
+    if(capacity != src.getCapacity())
         return 0;
 
-    if (currentIndex != src.getCurrentIndex())
+    if(currentIndex != src.getCurrentIndex())
         return 0;
 
-    if (manyItems != src.size())
+    if(manyItems != src.size())
         return 0;
 
     try {

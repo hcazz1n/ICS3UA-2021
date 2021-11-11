@@ -66,13 +66,13 @@ public class DoubleArraySequence {
     *                                     double[initialCapacity].
     **/
    // Get empty sequence with a specified Capacity
-   public DoubleArraySequence(int initialCapacity) {
+   public DoubleArraySequence(int initialCapacity){
       if (initialCapacity < 0) {
-         throw new IllegalArgumentException("Initial capacity cannot be negative.");
+         throw new IllegalArgumentException("Only Positive Capacitates allowed.");
       }
-      data = new double[initialCapacity];
       manyItems = 0;
-      currentIndex = manyItems;
+      currentIndex = 0;
+      data = new double[initialCapacity];
    }
 
    /**
@@ -85,6 +85,8 @@ public class DoubleArraySequence {
    // The new double array sequence is a copy of the DoubleArraySequence src.
    public DoubleArraySequence(DoubleArraySequence src) {
       this.manyItems = src.manyItems;
+      this.currentIndex = src.currentIndex;
+      data = new double[src.data.length];
    }
 
    /**
@@ -105,7 +107,25 @@ public class DoubleArraySequence {
     *       the sequence to fail with an arithmetic overflow.
     **/
    public void addAfter(double d) {
-
+      int index = 0;
+      if(getCapacity() > Integer.MAX_VALUE){
+         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
+      }
+      if(!isCurrent()){
+         index = manyItems;
+      }
+      else{
+         index = currentIndex + 1;
+      }
+      if(getCapacity() >= index){
+         ensureCapacity(getCapacity() * 2);
+      }
+      for(int i = manyItems; i > index; i--){
+         data[i] = data[i - 1];
+      }  
+      data[index] = d;
+      manyItems++;
+      currentIndex = index;
    }
 
    /**
@@ -153,6 +173,7 @@ public class DoubleArraySequence {
     * sequence.
     * 
     * @param - none
+    * @throws IllegalAccessException
     * @precondition isCurrent() returns true.
     * @postcondition If the current element was already the end element of this
     *                sequence (with nothing after it), then there is no longer any
@@ -161,15 +182,11 @@ public class DoubleArraySequence {
     * @exception IllegalStateException Indicates that there is no current element,
     *                                  so advance may not be called.
     **/
-   public void advance() {
+   public void advance() throws IllegalStateException {
       if (!isCurrent()) {
          throw new IllegalStateException("No Current Element.");
       }
-      if (currentIndex - 1 == manyItems) {
-         currentIndex = manyItems;
-      } else {
-         currentIndex++;
-      }
+      currentIndex++;
    }
 
    /**
@@ -204,7 +221,12 @@ public class DoubleArraySequence {
     *                             int[minimumCapacity].
     **/
    public void ensureCapacity(int minimumCapacity) {
-
+      if(getCapacity() > Integer.MAX_VALUE){
+         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
+      }
+      if(!(getCapacity() >= minimumCapacity)){
+         data = new double[minimumCapacity];  
+      }
    }
 
    /**
@@ -216,7 +238,7 @@ public class DoubleArraySequence {
     * @return the current capacity of this sequence
     **/
    public int getCapacity() {
-      return -1;
+      return data.length;
    }
 
    /**
@@ -229,8 +251,8 @@ public class DoubleArraySequence {
     *                                  so getCurrent may not be called.
     **/
    public double getCurrent() {
-      if (!(isCurrent())) {
-         throw new IllegalStateException("No Current Element");
+      if (!isCurrent()) {
+         throw new IllegalStateException("No Current Element.");
       }
       return data[currentIndex];
    }
@@ -244,7 +266,6 @@ public class DoubleArraySequence {
     *         element at the moment)
     **/
    public boolean isCurrent() { // see if sequence has a specified current element
-
       return currentIndex != manyItems;
    }
 
@@ -271,8 +292,7 @@ public class DoubleArraySequence {
     * @return the number of elements in this sequence
     **/
    public int size() { // Determine the number of elements in this sequence.
-
-      return -1;
+      return manyItems;
    }
 
    /**
