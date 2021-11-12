@@ -117,7 +117,7 @@ public class DoubleArraySequence {
       else{
          index = currentIndex + 1;
       }
-      if(getCapacity() >= index){
+      if(index >= getCapacity()){
          ensureCapacity(getCapacity() * 2);
       }
       for(int i = manyItems; i > index; i--){
@@ -165,7 +165,23 @@ public class DoubleArraySequence {
     *       an arithmetic overflow that will cause the sequence to fail.
     **/
    public void addAll(DoubleArraySequence addend) {
-
+      if(addend == null){
+         throw new NullPointerException("This sequence is null.");
+      }
+      if(getCapacity() > Integer.MAX_VALUE){
+         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
+      }
+      double[] arr = new double[getCapacity() + addend.data.length + 1];
+      for(int i = 0; i < manyItems; i++){
+         arr[i] = data[i];
+      }
+      for(int i = manyItems; i < manyItems + addend.data.length; i++){
+         if(i >= getCapacity()){
+            ensureCapacity(getCapacity() * 2);
+         }
+         arr[i] = data[i];
+      }
+      data = arr;
    }
 
    /**
@@ -224,8 +240,12 @@ public class DoubleArraySequence {
       if(getCapacity() > Integer.MAX_VALUE){
          throw new OutOfMemoryError("The array cannot be bigger than the max number.");
       }
-      if(!(getCapacity() >= minimumCapacity)){
-         data = new double[minimumCapacity];  
+      if(getCapacity() * 2 <= minimumCapacity){
+         double[] arr = new double[minimumCapacity];
+         for(int i = 0; i < getCapacity(); i++){
+            arr[i] = data[i];
+         }
+         data = arr;  
       }
    }
 
