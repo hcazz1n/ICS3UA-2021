@@ -146,7 +146,27 @@ public class DoubleArraySequence {
     *       the sequence to fail with an arithmetic overflow.
     **/
    public void addBefore(double element) {
-
+      int index = 0;
+      if(getCapacity() > Integer.MAX_VALUE){
+         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
+      }
+      if(!isCurrent()){
+         index = manyItems;
+      }
+      else{
+         if(!(currentIndex == 0)){
+            index = currentIndex - 1;
+         }
+      }
+      if(manyItems >= getCapacity()){
+         ensureCapacity(getCapacity() * 2);
+      }
+      for(int i = index; i < manyItems - 1; i++){
+         data[i] = data[i + 1];
+      }
+      data[index] = element;
+      manyItems++;
+      currentIndex = index;
    }
 
    /**
@@ -166,22 +186,26 @@ public class DoubleArraySequence {
     **/
    public void addAll(DoubleArraySequence addend) {
       if(addend == null){
-         throw new NullPointerException("This sequence is null.");
+         throw new NullPointerException("Addend is null.");
       }
       if(getCapacity() > Integer.MAX_VALUE){
          throw new OutOfMemoryError("The array cannot be bigger than the max number.");
       }
-      double[] arr = new double[getCapacity() + addend.data.length + 1];
+      if(manyItems + addend.manyItems >= getCapacity()){
+         ensureCapacity(getCapacity() * 2);
+      }
+      double[] arr = new double[getCapacity()];
       for(int i = 0; i < manyItems; i++){
          arr[i] = data[i];
       }
-      for(int i = manyItems; i < manyItems + addend.data.length; i++){
-         if(i >= getCapacity()){
-            ensureCapacity(getCapacity() * 2);
-         }
-         arr[i] = data[i];
+      for(int i = manyItems; i < manyItems + addend.manyItems; i++){
+         arr[i] = addend.data[i - manyItems];
       }
+      manyItems = manyItems + addend.manyItems;
       data = arr;
+      if(getCapacity() > 10){
+         trimToSize();
+      }
    }
 
    /**
@@ -334,10 +358,17 @@ public class DoubleArraySequence {
     * @param - none
     * @postcondition This sequence's capacity has been changed to its current size.
     * @exception OutOfMemoryError Indicates insufficient memory for altering the
-    *                             capacity.
+    * capacity.
     **/
    public void trimToSize() {
-
+      if(getCapacity() > Integer.MAX_VALUE){
+         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
+      }
+      double[] arr = new double[manyItems];
+      for(int i = 0; i < manyItems; i++){
+         arr[i] = data[i];
+      }
+      data = arr;  
    }
 
    public int getCurrentIndex() {
