@@ -147,6 +147,7 @@ public class DoubleArraySequence {
     **/
    public void addBefore(double element) {
       int index = 0;
+      boolean minus1 = false;
       if(getCapacity() > Integer.MAX_VALUE){
          throw new OutOfMemoryError("The array cannot be bigger than the max number.");
       }
@@ -159,12 +160,19 @@ public class DoubleArraySequence {
       if(manyItems >= getCapacity()){
          ensureCapacity(getCapacity() * 2);
       }
-      if(manyItems != 0){
-         for(int i = manyItems; i >= index; i--){
-            data[i] = data[i - 1];
-         }
+      if(index == manyItems){
+         data[index] = data[index - 1];
+         minus1 = true;
       }
-      data[currentIndex] = element;
+      for(int i = manyItems; i > index; i--){
+         data[i] = data[i - 1];
+      }
+      if(minus1){
+         data[index - 1] = element;
+      }
+      else{ 
+         data[currentIndex] = element;
+      }
       manyItems++;
       if(index == 0){
          currentIndex = 0;
@@ -251,24 +259,8 @@ public class DoubleArraySequence {
     *       sequence to fail.
     **/
    public static DoubleArraySequence catenation(DoubleArraySequence s1, DoubleArraySequence s2) {
-      DoubleArraySequence temp = new DoubleArraySequence();
-      if(s1 == null || s2 == null){
-         throw new NullPointerException("One of the arrays is null.");
-      }
-      if(s1.getCapacity() > Integer.MAX_VALUE || s2.getCapacity() > Integer.MAX_VALUE){
-         throw new OutOfMemoryError("The array cannot be bigger than the max number.");
-      }
-      double[] data = new double[s1.manyItems + s2.manyItems];
-      for (int i = 0; i < s1.manyItems; i++) {
-         data[i] = s1.data[i];
-      }
-      for(int i = s1.manyItems; i < s1.manyItems + s2.manyItems; i++){
-         data[i] = s2.data[i - s1.manyItems];
-      }
-      temp.data = data;
-      temp.manyItems = s1.manyItems + s2.manyItems;
-      temp.currentIndex = temp.manyItems;
-      return temp;
+      return null;
+
    }
 
    /**
@@ -347,14 +339,7 @@ public class DoubleArraySequence {
     *                                  so removeCurrent may not be called.
     **/
    public void removeCurrent() {
-      int index = 0;
-      if(!isCurrent()){
-         throw new IllegalStateException("There is no current element to remove.");
-      }
-      for(int i = index; i < manyItems - 1; i++) {
-         data[i] = data[i + 1];
-      }
-      manyItems--;
+
    }
 
    /**
