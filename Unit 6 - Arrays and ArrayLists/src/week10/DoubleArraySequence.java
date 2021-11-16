@@ -150,10 +150,7 @@ public class DoubleArraySequence {
       if(getCapacity() > Integer.MAX_VALUE){
          throw new OutOfMemoryError("The array cannot be bigger than the max number.");
       }
-      if(!isCurrent()){
-         index = manyItems;
-      }
-      else{
+      if(isCurrent()){
          index = currentIndex + 1;
       }
       if(manyItems >= getCapacity()){
@@ -161,17 +158,19 @@ public class DoubleArraySequence {
       }
       if(manyItems != 0){
          for(int i = manyItems; i >= index; i--){
-            data[i] = data[i - 1];
+            if(i > 0){
+               data[i] = data[i - 1];
+            }
          }
       }
-      data[currentIndex] = element;
-      manyItems++;
       if(index == 0){
          currentIndex = 0;
       }
       else{
          currentIndex = index - 1;
       }
+      data[currentIndex] = element;
+      manyItems++;
    }
 
    /**
