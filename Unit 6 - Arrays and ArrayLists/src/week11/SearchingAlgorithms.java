@@ -5,7 +5,6 @@ import java.util.Arrays;
 public class SearchingAlgorithms {
    public static void main(String[] args) {
       int[] arr = { 5, 91, 34, 83, 384, 49, 10, 31 };
-
       int index = linearSearch(arr, 83);
       index = linearSearch(arr, 84);
 

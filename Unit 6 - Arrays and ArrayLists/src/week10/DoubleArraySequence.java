@@ -260,7 +260,7 @@ public class DoubleArraySequence {
       double[] data = new double[s1.manyItems + s2.manyItems];
       for (int i = 0; i < s1.manyItems; i++) {
          data[i] = s1.data[i];
-      }
+      } 
       for(int i = s1.manyItems; i < s1.manyItems + s2.manyItems; i++){
          data[i] = s2.data[i - s1.manyItems];
       }
